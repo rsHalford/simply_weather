@@ -1,15 +1,11 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'views/weather.dart';
 
 void main() {
-  analytics = FirebaseAnalytics();
   runApp(MyApp());
 }
-
-FirebaseAnalytics analytics;
 
 class MyApp extends StatelessWidget {
   @override
