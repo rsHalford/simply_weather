@@ -9,7 +9,7 @@ class CurrentWeather extends StatefulWidget {
 }
 
 class _CurrentWeather extends State<CurrentWeather> {
-  GlobalKey<ScaffoldState> _scaffoldKey;
+  GlobalKey<ScaffoldMessengerState> _scaffoldKey;
   String key = '65452a095dde4cffe2cd646e23267775';
   WeatherFactory wf;
   List<Weather> _data = [];
@@ -21,7 +21,7 @@ class _CurrentWeather extends State<CurrentWeather> {
 
   @override
   void initState() {
-    _getLocation();
+    _getLocationWeather();
     _dateTimeNow = DateTime.now();
     _timeFormatted = DateFormat.Hm().format(_dateTimeNow);
     _dayFormatted = DateFormat.d().format(_dateTimeNow);
@@ -31,29 +31,26 @@ class _CurrentWeather extends State<CurrentWeather> {
     wf = WeatherFactory(key);
   }
   
+
+  _getLocationWeather() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    Weather weather = await wf.currentWeatherByLocation(
+        position.latitude, position.longitude);
+
+    setState(() {
+      _data = [weather];
+    });
+  }
+
+
   @override
   void dispose() {
     _scaffoldKey?.currentState?.dispose();
     super.dispose();
   }
 
-  _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    print('Current location lat lon ' +
-        position.latitude.toString() +
-        " | " +
-        position.longitude.toString());
-
-    Weather weather = await wf.currentWeatherByLocation(
-        position.latitude, position.longitude);
-    setState(() {
-      _data = [weather];
-    });
-
-    print(_data.toString());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +71,7 @@ class _CurrentWeather extends State<CurrentWeather> {
               Duration(seconds: 1),
               () {
                 setState(() {
-                  _getLocation();
+                  _getLocationWeather();
                   _dateTimeNow = DateTime.now();
                   _timeFormatted = DateFormat.Hm().format(_dateTimeNow);
                   _dayFormatted = DateFormat.d().format(_dateTimeNow);
